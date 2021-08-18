@@ -1,0 +1,1 @@
+,FILTER('Sharepoint Data','Sharepoint Data'[Month]="July")
