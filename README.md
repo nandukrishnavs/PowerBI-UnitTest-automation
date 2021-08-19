@@ -28,3 +28,4 @@ References
 2. https://tsql.tech/quick-tip-how-to-find-the-address-of-the-powerbi-local-tabular-instance/
 3. https://gist.github.com/janegilring/ada89d75ceb8cc558cd9738873c4b36b
 4. https://docs.microsoft.com/en-us/powershell/module/sqlserver/invoke-ascmd?view=sqlserver-ps
+5. https://social.technet.microsoft.com/wiki/contents/articles/24030.powershell-demo-prompt-for-choice.aspx
