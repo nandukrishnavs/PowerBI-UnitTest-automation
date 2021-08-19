@@ -132,24 +132,25 @@ foreach($table in $db.Model.Tables)
             $Expectedresult= $FilteredArray.Output
 
             Write-Host "Result`n$Result`n`nExpected Result`n$Expectedresult`n" 
-
-            if($Result -eq $Expectedresult)
+            if([string]::IsNullOrEmpty($Expectedresult))
                 {
-                    Write-Host "Test case passed`n" -ForegroundColor Green;
-                    $passedCount +=1;
+                     Write-Host "Test case missing`n" -ForegroundColor Gray;
+                     $missingCount+=1
                 }
-            else 
+            else
                 {
-                    if([string]::IsNullOrEmpty($Expectedresult))
-                        {
-                            Write-Host "Test case missing`n" -ForegroundColor Gray;
-                            $missingCount+=1
-                        }
-                    else
-                        {
-                            Write-Host "Test case failed`n" -ForegroundColor Red;
-                            $failedCount +=1;
-                        }
+                           
+                if($Result -eq $Expectedresult)
+                    {
+                        Write-Host "Test case passed`n" -ForegroundColor Green;
+                        $passedCount +=1;
+                    }
+                else 
+                     {
+                        Write-Host "Test case failed`n" -ForegroundColor Red;
+                        $failedCount +=1;
+                     }
+
                 }
     
     Write-Host "=======================================================================================`n" -ForegroundColor yellow
