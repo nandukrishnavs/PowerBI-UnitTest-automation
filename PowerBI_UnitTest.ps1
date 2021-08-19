@@ -116,9 +116,7 @@ foreach($table in $db.Model.Tables)
         {
             $measureName=$measure.Name
             $customQuery="CALCULATE([$measureName]$customFilterQuery)"
-            $exp =$measure.Expression
-            $out = $measure.Name + ":=" + $exp + "`n";
-            Write-Host "$out `nCustom Query:=$customQuery`n" ;
+            Write-Host "Measure Name: $measureName`nCustom Query:=$customQuery`n" ;
             #Executing the custom Query
             [xml]$Data = Invoke-ASCmd -Query "EVALUATE ({$customQuery})" -Server $server  -Database $dbId;
             #Getting the result
@@ -163,8 +161,7 @@ function selectedDax()
             $measureName=$i.Name
             $customQuery="CALCULATE([$measureName]$customFilterQuery)"
             $Expectedresult=$i.Output
-            $out = $measure.Name + ":=" + $exp + "`n";
-            Write-Host "$out `nCustom Query:=$customQuery`n" ;
+            Write-Host "Measure Name: $measureName`nCustom Query:=$customQuery`n" ;
             #Executing the custom Query
             [xml]$Data = Invoke-ASCmd -Query "EVALUATE ({$customQuery})" -Server $server  -Database $dbId;
             #Getting the result
