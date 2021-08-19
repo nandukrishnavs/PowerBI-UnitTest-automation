@@ -1,4 +1,4 @@
-﻿[System.Reflection.Assembly]::LoadWithPartialName("Microsoft.AnalysisServices.Tabular");
+[System.Reflection.Assembly]::LoadWithPartialName("Microsoft.AnalysisServices.Tabular");
 cls
 
 #Update these variables
@@ -51,17 +51,9 @@ $ErrorActionPreference="SilentlyContinue"
 Stop-Transcript | out-null
 $ErrorActionPreference = "Continue"
 Start-Transcript -path $outFilePath
-#Reading the server name
-$file = Read-Host -Prompt "Please enter input excel path. `nExample: C:\Mytest\UnitTest.xlsx`n"
 
-    if ([string]::IsNullOrWhiteSpace($file))
-        {
-            #Dafault path
-            $file = $defaultTestData
-
-        }
-
-    $sheetName = "Measures"
+$file = $defaultTestData
+$sheetName = "Measures"
 
     #create new excel COM object
     $excel = New-Object -com Excel.Application
@@ -114,7 +106,10 @@ $passedCount=0;
 $failedCount=0;
 $missingCount=0;
 
-#Traversing through each measures
+#Traversing through all the measures available in the model
+function allDax()
+{
+
 foreach($table in $db.Model.Tables) 
     {
     foreach($measure in $table.Measures) 
@@ -126,7 +121,7 @@ foreach($table in $db.Model.Tables)
             Write-Host "$out `nCustom Query:=$customQuery`n" ;
             #Executing the custom Query
             [xml]$Data = Invoke-ASCmd -Query "EVALUATE ({$customQuery})" -Server $server  -Database $dbId;
-            #Geting the result
+            #Getting the result
             $Result=$Data.return.root.row._x005B_Value_x005D_;
             $FilteredArray = $unitTestArray.Where({$_.Name -EQ $measure.Name}); 
             $Expectedresult= $FilteredArray.Output
@@ -146,22 +141,74 @@ foreach($table in $db.Model.Tables)
                         $passedCount +=1;
                     }
                 else 
-                     {
+                    {
                         Write-Host "Test case failed`n" -ForegroundColor Red;
                         $failedCount +=1;
-                     }
+                    }
 
                 }
     
-    Write-Host "=======================================================================================`n" -ForegroundColor yellow
-  }
+            Write-Host "=======================================================================================`n" -ForegroundColor yellow
+        }
+    }
+Write-Host "Passed  :$passedCount`nFailed  :$failedCount`nMissing :$missingCount`n"
 }
 
-Write-Host "Passed  :$passedCount`nFailed  :$failedCount`nMissing :$missingCount`n"
+#Traversing through all the measures available in the UnitTest.xlsx file
 
+function selectedDax()
+{
+    foreach($i in $unitTestArray)
+        {
+            $measureName=$i.Name
+            $customQuery="CALCULATE([$measureName]$customFilterQuery)"
+            $Expectedresult=$i.Output
+            $out = $measure.Name + ":=" + $exp + "`n";
+            Write-Host "$out `nCustom Query:=$customQuery`n" ;
+            #Executing the custom Query
+            [xml]$Data = Invoke-ASCmd -Query "EVALUATE ({$customQuery})" -Server $server  -Database $dbId;
+            #Getting the result
+            $Result=$Data.return.root.row._x005B_Value_x005D_;
+            if($Result -eq $Expectedresult)
+                {
+                    Write-Host "Test case passed`n" -ForegroundColor Green;
+                    $passedCount +=1;
+                }
+            else 
+                {
+                    Write-Host "Test case failed`n" -ForegroundColor Red;
+                    $failedCount +=1;
+                }
+
+        Write-Host "=======================================================================================`n" -ForegroundColor yellow        
+            
+        }
+Write-Host "Passed  :$passedCount`nFailed  :$failedCount`n"
+}
+
+
+#Choice module
+function choiceModule()
+{
+    $Title = "Welcome"
+    $Info = "Do you want to execute all the measures available in your model?"  
+    $options = [System.Management.Automation.Host.ChoiceDescription[]] @("&Yes", "&No", "&Quit")
+    [int]$defaultchoice = 2
+    $opt = $host.UI.PromptForChoice($Title , $Info , $Options,$defaultchoice)
+    switch($opt)
+    {
+        0 {allDax}
+        1 {selectedDax}
+        2 {Write-Host "Good Bye!!!" -ForegroundColor Green}
+    }
+}
+
+
+#calling choice module
+choiceModule
 
 $as.Disconnect();
-$excel.Quit()
+$excel.Quit();
 
 Write-Host "`n=======================================================================================`n" -ForegroundColor yellow
 
