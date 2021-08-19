@@ -1,6 +1,7 @@
 # PowerBI-UnitTest-automation
 This PowerShell script is to automate the unit testing process.
 To execute this script, you have to install sqlserver module.(Run as admin)
+
 Install-Module sqlserver -allowclobber
 
 ![image](https://user-images.githubusercontent.com/74527901/130020380-71c8f897-3463-497d-9de8-24b4bb5824df.png)
